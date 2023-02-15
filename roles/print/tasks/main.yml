@@ -1,8 +1,10 @@
 ---
- - name: Print env variable
-   shell: echo $PATH
-   register: print_result
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
 
- - name: print message
-   debug:
-     msg: "{{ print_result.stdout_lines }}"
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: yes
