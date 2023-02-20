@@ -1,15 +1,47 @@
 ---
 - name: "update apt packages."
-  become: yes
   apt:
     update_cache: yes
 
 - name: "upgrade packages"
-  become: yes
   apt:
     upgrade: yes
 
 - name: Remove dependencies that are no longer required
-  become: yes
   apt:
     autoremove: yes
+
+
+- name: Install dependencies nodejs and npm
+  apt:
+      pkg:
+          - nodejs
+          - npm
+      state: latest
+      update-cache: yes
+
+- name: Installing pm2
+  npm:
+       name: pm2
+       global: yes
+
+- name: Updating apt packages
+  apt:
+     update-cache: yes
+
+- name: Checking if web directory is available
+  stat:
+    path: ~/web
+  register: web
+
+- name: Creating a web directory 
+  command: mkdir ~/web
+  when: not web.stat.exists
+
+- name: Copying index.js to web directory
+  copy:
+       src: index.js
+       dest: ~/web/index.js
+
+- name: start Pm2
+  command: pm2 start ~/web/index.js -f
